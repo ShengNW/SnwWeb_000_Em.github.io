@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>厌倦的情绪解剖室</title>
+    <style>
+      :root {
+        --bg: #f3f5f8;
+        --panel: #ffffff;
+        --ink: #0f172a;
+        --muted: #475569;
+        --line: #e2e8f0;
+        --hero: #0f172a;
+        --indigo: #4f46e5;
+        --indigo-soft: #eef2ff;
+        --green-soft: #ecfdf3;
+        --amber-soft: #fff7ed;
+        --shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+        --radius-lg: 18px;
+        --radius-md: 12px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(1000px 360px at 12% -5%, #dbeafe 0%, rgba(219, 234, 254, 0) 65%),
+          radial-gradient(900px 320px at 92% 8%, #ede9fe 0%, rgba(237, 233, 254, 0) 70%),
+          var(--bg);
+      }
+
+      .page {
+        width: min(980px, 94vw);
+        margin: 26px auto;
+      }
+
+      .shell {
+        background: var(--panel);
+        border: 1px solid #e5e7eb;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+      }
+
+      .hero {
+        background: linear-gradient(135deg, #0f172a, #111827 42%, #1e1b4b);
+        color: #f8fafc;
+        padding: clamp(22px, 4vw, 34px);
+      }
+
+      .hero h1 {
+        margin: 0;
+        font-size: clamp(1.5rem, 3.1vw, 2.2rem);
+        letter-spacing: 0.01em;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .brain-dot {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 25%, #a5b4fc, #6366f1 58%, #4338ca);
+        box-shadow: inset 0 -6px 10px rgba(15, 23, 42, 0.35);
+      }
+
+      .hero p {
+        margin: 12px 0 0;
+        color: #cbd5e1;
+        font-size: 0.98rem;
+      }
+
+      .tabs {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .tab-btn {
+        border: 0;
+        background: #fff;
+        color: #64748b;
+        font-weight: 700;
+        font-size: 0.93rem;
+        padding: 14px 8px;
+        cursor: pointer;
+        transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .tab-btn:hover {
+        color: #334155;
+        background: #f8fafc;
+      }
+
+      .tab-btn.active {
+        color: var(--indigo);
+        box-shadow: inset 0 -3px 0 var(--indigo);
+      }
+
+      .content {
+        padding: clamp(18px, 3.2vw, 32px);
+      }
+
+      .tab-panel {
+        display: none;
+      }
+
+      .tab-panel.active {
+        display: block;
+        animation: enter 0.28s ease;
+      }
+
+      @keyframes enter {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .section-title {
+        margin: 0 0 14px;
+        font-size: 1.2rem;
+      }
+
+      .logic-grid {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: 1fr;
+      }
+
+      .logic-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        background: #f8fafc;
+        padding: 16px;
+      }
+
+      .logic-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #fff;
+      }
+
+      .logic-icon.blue {
+        background: #3b82f6;
+      }
+
+      .logic-icon.yellow {
+        background: #f59e0b;
+      }
+
+      .logic-icon.red {
+        background: #ef4444;
+      }
+
+      .logic-card h3 {
+        margin: 12px 0 8px;
+        font-size: 1rem;
+      }
+
+      .logic-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .highlight {
+        margin-top: 16px;
+        border: 1px solid #c7d2fe;
+        border-radius: var(--radius-md);
+        background: var(--indigo-soft);
+        padding: 14px;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+      }
+
+      .highlight-mark {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+        color: #fff;
+        background: var(--indigo);
+        flex-shrink: 0;
+      }
+
+      .highlight p {
+        margin: 0;
+        color: #312e81;
+        font-size: 0.9rem;
+        font-style: italic;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 660px;
+      }
+
+      thead tr {
+        background: #f1f5f9;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        color: #334155;
+        font-size: 0.86rem;
+        letter-spacing: 0.02em;
+      }
+
+      td {
+        color: #475569;
+        font-size: 0.9rem;
+      }
+
+      td:first-child {
+        color: var(--indigo);
+        font-weight: 700;
+      }
+
+      .lab-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .switch-btn {
+        border: 1px solid #c7d2fe;
+        background: #eef2ff;
+        color: #3730a3;
+        border-radius: 999px;
+        padding: 7px 12px;
+        font-size: 0.84rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .switch-btn:hover {
+        background: #e0e7ff;
+      }
+
+      .scenario-card {
+        position: relative;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        background: linear-gradient(135deg, #0b1220, #1e293b);
+        color: #f8fafc;
+        padding: clamp(16px, 2.5vw, 24px);
+      }
+
+      .case-label {
+        display: inline-block;
+        font-size: 0.72rem;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+      }
+
+      .scenario-text {
+        margin: 8px 0 0;
+        font-size: 1.05rem;
+      }
+
+      .scenario-mark {
+        position: absolute;
+        right: 12px;
+        top: 8px;
+        font-size: 4.8rem;
+        line-height: 1;
+        font-weight: 800;
+        color: rgba(148, 163, 184, 0.12);
+        user-select: none;
+      }
+
+      .analysis-card {
+        margin-top: 12px;
+        border: 2px dashed #cbd5e1;
+        border-radius: var(--radius-md);
+        padding: 14px;
+      }
+
+      .analysis-card h3 {
+        margin: 0 0 8px;
+        font-size: 1rem;
+        color: #334155;
+      }
+
+      .analysis-card p {
+        margin: 0;
+        color: #475569;
+        font-style: italic;
+      }
+
+      .lab-grid {
+        margin-top: 12px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .advice,
+      .warning {
+        border-radius: var(--radius-md);
+        padding: 12px;
+      }
+
+      .advice {
+        background: var(--green-soft);
+        border: 1px solid #bbf7d0;
+      }
+
+      .warning {
+        background: var(--amber-soft);
+        border: 1px solid #fed7aa;
+      }
+
+      .advice h4,
+      .warning h4 {
+        margin: 0 0 8px;
+        font-size: 0.92rem;
+      }
+
+      .advice ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+
+      .advice li,
+      .warning p {
+        color: #3f3f46;
+        font-size: 0.84rem;
+      }
+
+      .warning p {
+        margin: 0;
+      }
+
+      .footer {
+        background: #f8fafc;
+        border-top: 1px solid var(--line);
+        padding: 16px;
+        text-align: center;
+      }
+
+      .footer p {
+        margin: 0;
+        font-size: 0.72rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #94a3b8;
+      }
+
+      @media (min-width: 760px) {
+        .logic-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+
+        .lab-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="shell">
+        <header class="hero">
+          <h1><span class="brain-dot" aria-hidden="true"></span>厌倦的情绪解剖室</h1>
+          <p>深度理解“不想继续”背后的心理机制与底层逻辑</p>
+        </header>
+
+        <nav class="tabs" aria-label="页面导航">
+          <button class="tab-btn active" data-tab="logic" aria-selected="true">底层逻辑</button>
+          <button class="tab-btn" data-tab="diff" aria-selected="false">情绪辨析</button>
+          <button class="tab-btn" data-tab="lab" aria-selected="false">场景拆解</button>
+        </nav>
+
+        <div class="content">
+          <section class="tab-panel active" id="tab-logic">
+            <h2 class="section-title">为什么我们会感到“厌倦”？</h2>
+            <div class="logic-grid" id="logicGrid"></div>
+            <div class="highlight">
+              <span class="highlight-mark" aria-hidden="true">!</span>
+              <p>
+                “厌倦本质上是一种‘功能性痛苦’，它是进化的产物，强制你停止当前低效率的行为，去探索新的可能性。”
+              </p>
+            </div>
+          </section>
+
+          <section class="tab-panel" id="tab-diff" hidden>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>情绪</th>
+                    <th>核心逻辑</th>
+                    <th>表现细节</th>
+                    <th>本质区别</th>
+                  </tr>
+                </thead>
+                <tbody id="diffBody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="tab-panel" id="tab-lab" hidden>
+            <div class="lab-top">
+              <h2 class="section-title" style="margin: 0">厌倦场景模拟</h2>
+              <button class="switch-btn" id="scenarioSwitch" type="button">切换场景</button>
+            </div>
+
+            <article class="scenario-card">
+              <span class="case-label" id="caseLabel">Case Study 1</span>
+              <p class="scenario-text" id="scenarioContext"></p>
+              <span class="scenario-mark" aria-hidden="true">B</span>
+            </article>
+
+            <article class="analysis-card">
+              <h3>底层逻辑剖析</h3>
+              <p id="scenarioAnalysis"></p>
+            </article>
+
+            <div class="lab-grid">
+              <article class="advice">
+                <h4>建议对策</h4>
+                <ul>
+                  <li>主动增加任务的随机性和复杂度。</li>
+                  <li>重新定义该任务与长远目标的联系。</li>
+                  <li>设置“微奖励”机制。</li>
+                </ul>
+              </article>
+              <article class="warning">
+                <h4>错误预判</h4>
+                <p>
+                  不要简单地以为是“累了”，如果此时休息（如睡觉）不仅无法缓解，反而会增加醒后的虚无感。
+                </p>
+              </article>
+            </div>
+          </section>
+        </div>
+
+        <footer class="footer">
+          <p>理解情绪是掌控生活的开始 © 情绪逻辑分析指南</p>
+        </footer>
+      </section>
+    </main>
+
+    <script>
+      const logicData = [
+        {
+          title: "意义匮乏 (Meaning Gap)",
+          description:
+            "当个体认为当前活动缺乏内在价值或目标感时，大脑会通过‘厌倦’发出警报，提示你资源正在被浪费。",
+          color: "blue",
+          tag: "M"
+        },
+        {
+          title: "刺激阈值失调 (Stimulus Threshold)",
+          description:
+            "长期处于高强度刺激下会导致多巴胺受体脱敏。当环境提供的刺激低于你的‘兴奋基准线’时，厌倦便产生了。",
+          color: "yellow",
+          tag: "S"
+        },
+        {
+          title: "控制感缺失 (Lack of Agency)",
+          description:
+            "如果你感到被困在某种无法逃离的重复节奏中，厌倦会演变成一种被动的反抗，表现为对现状的彻底排斥。",
+          color: "red",
+          tag: "A"
+        }
+      ];
+
+      const comparisonData = [
+        {
+          emotion: "厌倦 (Boredom)",
+          core: "缺乏挑战或意义",
+          feeling: "想要离开，寻求新刺激",
+          nuance: "核心是‘无聊’，还有改变的欲望。"
+        },
+        {
+          emotion: "倦怠 (Burnout)",
+          core: "过度透支资源",
+          feeling: "想要休息，拒绝任何任务",
+          nuance: "核心是‘累’，不仅仅是对事物的失去兴趣。"
+        },
+        {
+          emotion: "冷漠 (Apathy)",
+          core: "情感连接断裂",
+          feeling: "不在乎结果，无所谓",
+          nuance: "核心是‘无心’，完全没有想要改变的驱动力。"
+        },
+        {
+          emotion: "烦躁 (Restlessness)",
+          core: "能量无处安放",
+          feeling: "坐立难安，想动却没方向",
+          nuance: "核心是‘乱’，常是厌倦的一种表现形式。"
+        }
+      ];
+
+      const scenarios = [
+        {
+          context: "在流水线上重复同一个动作 8 小时。",
+          analysis:
+            "这是典型的【过度预测性】导致的厌倦。大脑已经完全掌握了模式，不再需要算力，因此停止发放奖励信号。"
+        },
+        {
+          context: "阅读一本完全看不懂的量子物理著作。",
+          analysis:
+            "这是【技能/挑战失衡】。当挑战远超能力时，大脑因为无法获取反馈而选择‘关机’保护，表现为看不进去的厌倦。"
+        },
+        {
+          context: "虽然生活富足，却觉得每天都毫无意义。",
+          analysis:
+            "这是【存在主义厌倦】。底层逻辑是世界观的崩塌，找不到个人与社会、宇宙的有效链接点。"
+        }
+      ];
+
+      let activeTab = "logic";
+      let scenarioIndex = 0;
+
+      function renderLogic() {
+        const root = document.getElementById("logicGrid");
+        root.innerHTML = "";
+
+        logicData.forEach((item) => {
+          const card = document.createElement("article");
+          card.className = "logic-card";
+          card.innerHTML = `
+            <span class="logic-icon ${item.color}" aria-hidden="true">${item.tag}</span>
+            <h3>${item.title}</h3>
+            <p>${item.description}</p>
+          `;
+          root.appendChild(card);
+        });
+      }
+
+      function renderDiff() {
+        const body = document.getElementById("diffBody");
+        body.innerHTML = "";
+
+        comparisonData.forEach((row) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${row.emotion}</td>
+            <td>${row.core}</td>
+            <td>${row.feeling}</td>
+            <td><em>${row.nuance}</em></td>
+          `;
+          body.appendChild(tr);
+        });
+      }
+
+      function renderScenario() {
+        const row = scenarios[scenarioIndex];
+        document.getElementById("caseLabel").textContent = `Case Study ${scenarioIndex + 1}`;
+        document.getElementById("scenarioContext").textContent = row.context;
+        document.getElementById("scenarioAnalysis").textContent = row.analysis;
+      }
+
+      function switchTab(tabName) {
+        activeTab = tabName;
+
+        document.querySelectorAll(".tab-btn").forEach((btn) => {
+          const isActive = btn.dataset.tab === tabName;
+          btn.classList.toggle("active", isActive);
+          btn.setAttribute("aria-selected", String(isActive));
+        });
+
+        document.querySelectorAll(".tab-panel").forEach((panel) => {
+          const isActive = panel.id === `tab-${tabName}`;
+          panel.hidden = !isActive;
+          panel.classList.toggle("active", isActive);
+        });
+      }
+
+      function bindEvents() {
+        document.querySelectorAll(".tab-btn").forEach((btn) => {
+          btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+        });
+
+        document.getElementById("scenarioSwitch").addEventListener("click", () => {
+          scenarioIndex = (scenarioIndex + 1) % scenarios.length;
+          renderScenario();
+        });
+      }
+
+      function init() {
+        renderLogic();
+        renderDiff();
+        renderScenario();
+        bindEvents();
+        switchTab(activeTab);
+      }
+
+      init();
+    </script>
+  </body>
+</html>

@@ -1,343 +1,785 @@
-import React, { useState, useEffect } from 'react';
-import { Brain, Activity, Wind, ArrowRight, ShieldAlert, Zap, HelpCircle, CheckCircle2 } from 'lucide-react';
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>拆解与掌控焦虑</title>
+    <style>
+      :root {
+        --bg: #f8fafc;
+        --panel: #ffffff;
+        --text: #0f172a;
+        --muted: #475569;
+        --line: #e2e8f0;
+        --blue: #2563eb;
+        --blue-soft: #eff6ff;
+        --emerald-soft: #ecfdf5;
+        --red-soft: #fef2f2;
+        --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        --radius: 18px;
+      }
 
-export default function App() {
-  const [activeTab, setActiveTab] = useState('logic');
+      * {
+        box-sizing: border-box;
+      }
 
-  return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-blue-200">
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 py-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 flex items-center gap-3">
-            <Brain className="text-blue-500 w-8 h-8" />
-            拆解与掌控焦虑
-          </h1>
-          <p className="text-slate-500 mt-2 text-sm md:text-base">
-            理解它的底层逻辑，辨析它的面貌，然后重新夺回大脑的控制权。
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        background: radial-gradient(circle at top right, #eff6ff 0%, var(--bg) 28%);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      .wrap {
+        width: min(960px, 92vw);
+        margin: 0 auto;
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: rgba(255, 255, 255, 0.9);
+        border-bottom: 1px solid var(--line);
+        backdrop-filter: blur(8px);
+      }
+
+      .hero {
+        padding: 22px 0 12px;
+      }
+
+      .hero h1 {
+        margin: 0;
+        font-size: clamp(1.45rem, 2.7vw, 2.1rem);
+        letter-spacing: 0.01em;
+      }
+
+      .hero p {
+        margin: 10px 0 0;
+        color: var(--muted);
+      }
+
+      .tabs {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding: 10px 0 16px;
+      }
+
+      .tab-btn {
+        border: 1px solid transparent;
+        background: transparent;
+        color: #334155;
+        border-radius: 999px;
+        padding: 9px 14px;
+        font-size: 0.94rem;
+        font-weight: 600;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .tab-btn:hover {
+        background: #f1f5f9;
+      }
+
+      .tab-btn.active {
+        background: var(--blue-soft);
+        border-color: #bfdbfe;
+        color: #1d4ed8;
+      }
+
+      main {
+        padding: 28px 0 44px;
+      }
+
+      .tab-panel {
+        display: none;
+      }
+
+      .tab-panel.active {
+        display: block;
+        animation: fade-in 0.35s ease;
+      }
+
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: clamp(16px, 2.2vw, 24px);
+        box-shadow: var(--shadow);
+      }
+
+      .card + .card,
+      .card + .stack,
+      .stack + .card {
+        margin-top: 18px;
+      }
+
+      .lead-card {
+        background: var(--blue-soft);
+        border-color: #bfdbfe;
+      }
+
+      .lead-card p {
+        margin: 0;
+      }
+
+      .stack {
+        display: grid;
+        gap: 16px;
+      }
+
+      .section-title {
+        margin: 0 0 10px;
+        font-size: 1.1rem;
+      }
+
+      .chip-row {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding-bottom: 6px;
+      }
+
+      .chip {
+        border: 1px solid #cbd5e1;
+        background: #fff;
+        color: #1e293b;
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .chip.active {
+        background: #0f172a;
+        border-color: #0f172a;
+        color: #fff;
+      }
+
+      .label {
+        display: inline-block;
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #334155;
+      }
+
+      .example-event {
+        background: #f8fafc;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px;
+      }
+
+      .example-event p {
+        margin: 6px 0 0;
+        font-size: 1.05rem;
+      }
+
+      .example-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-top: 12px;
+      }
+
+      .example-col {
+        border-radius: 14px;
+        padding: 14px;
+        border: 1px solid var(--line);
+      }
+
+      .example-col.negative {
+        background: var(--red-soft);
+        border-color: #fecaca;
+      }
+
+      .example-col.positive {
+        background: var(--emerald-soft);
+        border-color: #a7f3d0;
+      }
+
+      .quote {
+        margin: 8px 0 10px;
+        color: #334155;
+        font-style: italic;
+      }
+
+      .result {
+        border-top: 1px solid rgba(15, 23, 42, 0.08);
+        padding-top: 10px;
+      }
+
+      .compare-intro {
+        background: #0f172a;
+        color: #f8fafc;
+      }
+
+      .compare-intro p {
+        margin: 8px 0 0;
+        color: #cbd5e1;
+      }
+
+      .compare-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px;
+      }
+
+      .compare-card.highlight {
+        border-color: #93c5fd;
+        box-shadow: 0 0 0 4px #eff6ff;
+      }
+
+      .compare-card h3 {
+        margin: 0;
+        font-size: 1.1rem;
+      }
+
+      .meta-grid {
+        margin-top: 12px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .meta {
+        background: #f8fafc;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px;
+      }
+
+      .meta strong {
+        display: block;
+        color: #475569;
+        font-size: 0.82rem;
+      }
+
+      .diff {
+        margin-top: 12px;
+        border-radius: 10px;
+        padding: 10px;
+        font-size: 0.92rem;
+        background: #f1f5f9;
+      }
+
+      .compare-card.highlight .diff {
+        background: #eff6ff;
+      }
+
+      .cope-intro {
+        background: var(--emerald-soft);
+        border-color: #a7f3d0;
+      }
+
+      .breath-box {
+        text-align: center;
+      }
+
+      .breath-stage {
+        width: clamp(180px, 30vw, 230px);
+        height: clamp(180px, 30vw, 230px);
+        margin: 18px auto;
+        position: relative;
+        display: grid;
+        place-items: center;
+      }
+
+      .breath-ring {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: #dbeafe;
+        opacity: 0.4;
+        transform: scale(1);
+        transition: transform 0.8s ease, background 0.8s ease;
+      }
+
+      .breath-ring[data-phase="inhale"] {
+        transform: scale(1.45);
+        background: #60a5fa;
+        transition: transform 4s linear, background 0.6s ease;
+      }
+
+      .breath-ring[data-phase="hold"] {
+        transform: scale(1.45);
+        background: #3b82f6;
+        transition: background 0.5s ease;
+      }
+
+      .breath-ring[data-phase="exhale"] {
+        transform: scale(1);
+        background: #93c5fd;
+        transition: transform 8s linear, background 0.6s ease;
+      }
+
+      .breath-core {
+        position: absolute;
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        padding: 10px;
+        background: #0f172a;
+        color: #fff;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.25);
+      }
+
+      .breath-core.idle {
+        background: #e2e8f0;
+        color: #334155;
+        box-shadow: none;
+      }
+
+      #phaseText {
+        font-size: 0.86rem;
+        font-weight: 700;
+      }
+
+      #phaseCounter {
+        margin-top: 6px;
+        font-size: 2rem;
+        line-height: 1;
+        font-weight: 300;
+      }
+
+      .btn {
+        border: none;
+        border-radius: 999px;
+        padding: 10px 18px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .btn.start {
+        background: #2563eb;
+        color: white;
+      }
+
+      .btn.stop {
+        background: #e2e8f0;
+        color: #1e293b;
+      }
+
+      .practice-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .practice-grid ul {
+        margin: 8px 0 0;
+        padding-left: 18px;
+      }
+
+      .practice-grid li + li {
+        margin-top: 6px;
+      }
+
+      @media (min-width: 780px) {
+        .example-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .meta-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+
+        .practice-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap hero">
+        <h1>拆解与掌控焦虑</h1>
+        <p>理解它的底层逻辑，辨析它的面貌，然后重新夺回大脑的控制权。</p>
+        <nav class="tabs" aria-label="内容导航">
+          <button class="tab-btn active" data-tab="logic" aria-selected="true">1. 底层逻辑 (ABC模型)</button>
+          <button class="tab-btn" data-tab="compare" aria-selected="false">2. 情绪辨析</button>
+          <button class="tab-btn" data-tab="cope" aria-selected="false">3. 掌控练习</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="tab-panel active" id="tab-logic">
+        <article class="card lead-card">
+          <h2 class="section-title">焦虑的底层逻辑：并非事情伤人，而是你的“观点”伤人</h2>
+          <p>
+            在心理学（认知行为疗法 CBT）中，这被称为 <strong>ABC模型</strong>。<br />
+            <strong>A (Activating Event):</strong> 发生的客观事件。<br />
+            <strong>B (Beliefs):</strong> 你对这件事情的信念、看法或灾难化想象。<br />
+            <strong>C (Consequences):</strong> 产生的情绪结果（即焦虑）。<br />
+            焦虑产生于 <strong>对“未来不确定性”的灾难化加工 (B)</strong>。
           </p>
-        </div>
-        {/* Navigation Tabs */}
-        <div className="max-w-4xl mx-auto px-4 flex gap-6 overflow-x-auto border-t border-slate-100 pt-2">
-          <TabButton active={activeTab === 'logic'} onClick={() => setActiveTab('logic')} icon={<Zap size={18} />} label="1. 底层逻辑 (ABC模型)" />
-          <TabButton active={activeTab === 'compare'} onClick={() => setActiveTab('compare')} icon={<ShieldAlert size={18} />} label="2. 情绪辨析" />
-          <TabButton active={activeTab === 'cope'} onClick={() => setActiveTab('cope')} icon={<Wind size={18} />} label="3. 掌控练习" />
-        </div>
-      </header>
+        </article>
 
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        {activeTab === 'logic' && <LogicSection />}
-        {activeTab === 'compare' && <CompareSection />}
-        {activeTab === 'cope' && <CopeSection />}
-      </main>
-    </div>
-  );
-}
+        <article class="card">
+          <h3 class="section-title">点击体验不同观点带来的结果变化：</h3>
+          <div class="chip-row" id="exampleButtons"></div>
 
-// --- Tab Button Component ---
-function TabButton({ active, onClick, icon, label }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`flex items-center gap-2 pb-4 pt-2 border-b-2 font-medium transition-colors whitespace-nowrap ${
-        active ? 'border-blue-500 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-800'
-      }`}
-    >
-      {icon}
-      {label}
-    </button>
-  );
-}
+          <div class="stack" style="margin-top: 12px">
+            <div class="example-event">
+              <span class="label">A: 客观事件</span>
+              <p id="exampleA"></p>
+            </div>
 
-// --- Section 1: Logic (ABC Model) ---
-function LogicSection() {
-  const [selectedExample, setSelectedExample] = useState(0);
-
-  const examples = [
-    {
-      title: "场景一：工作汇报",
-      a: "老板突然发消息：'明早来我办公室一趟，聊聊你那个项目'。",
-      b_negative: "肯定是我搞砸了什么，他要批评我，甚至可能要开除我。",
-      c_negative: "心跳加速、失眠、极度焦虑，无法集中注意力。",
-      b_positive: "可能是项目有新进展，或者老板想了解一下常规进度。",
-      c_positive: "稍微有些紧张（压力），但能平静准备材料。"
-    },
-    {
-      title: "场景二：社交互动",
-      a: "给朋友发了微信，过了三个小时他都没有回复。",
-      b_negative: "他是不是讨厌我了？我昨天是不是说错话了？大家都不喜欢我。",
-      c_negative: "自我怀疑，不断翻看手机，胸口发闷（焦虑）。",
-      b_positive: "他可能在忙，或者没带手机，晚点总会回的。",
-      c_positive: "平静，继续做自己的事情。"
-    },
-    {
-      title: "场景三：身体健康",
-      a: "突然觉得胸口有点闷痛。",
-      b_negative: "我是不是得了心脏病？我是不是要死了？",
-      c_negative: "恐慌发作，呼吸急促，彻底的焦虑失控。",
-      b_positive: "可能只是今天太累了，或者昨晚没睡好，观察一下。",
-      c_positive: "适度关注，保持放松。"
-    }
-  ];
-
-  return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      <div className="bg-blue-50 rounded-2xl p-6 border border-blue-100 text-blue-900">
-        <h2 className="text-xl font-bold mb-3 flex items-center gap-2">
-          <HelpCircle size={24} className="text-blue-500" />
-          焦虑的底层逻辑：并非事情伤人，而是你的“观点”伤人
-        </h2>
-        <p className="leading-relaxed">
-          在心理学（认知行为疗法 CBT）中，这被称为 <strong>ABC模型</strong>。<br/>
-          <strong>A (Activating Event):</strong> 发生的客观事件。<br/>
-          <strong>B (Beliefs):</strong> 你对这件事情的信念、看法或灾难化想象。<br/>
-          <strong>C (Consequences):</strong> 产生的情绪结果（即焦虑）。<br/>
-          焦虑产生于 <strong>对“未来不确定性”的灾难化加工 (B)</strong>。
-        </p>
-      </div>
-
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-slate-800">点击体验不同观点带来的结果变化：</h3>
-        <div className="flex gap-2 overflow-x-auto pb-2">
-          {examples.map((ex, idx) => (
-            <button
-              key={idx}
-              onClick={() => setSelectedExample(idx)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                selectedExample === idx ? 'bg-slate-800 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-              }`}
-            >
-              {ex.title}
-            </button>
-          ))}
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mt-4">
-          <div className="p-6 bg-slate-50 border-b border-slate-200">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">A: 客观事件</span>
-            <p className="text-lg mt-1 font-medium text-slate-800">{examples[selectedExample].a}</p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x border-slate-200">
-            {/* 灾难化视角 */}
-            <div className="p-6 hover:bg-red-50/50 transition-colors">
-              <span className="text-xs font-bold text-red-500 uppercase tracking-wider">B: 灾难化认知 (导致焦虑)</span>
-              <p className="mt-2 text-slate-700 italic">"{examples[selectedExample].b_negative}"</p>
-              
-              <div className="mt-4 pt-4 border-t border-red-100">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">C: 情绪与反应</span>
-                <div className="mt-2 flex items-start gap-2 text-red-700 font-medium">
-                  <Activity size={20} className="shrink-0" />
-                  <span>{examples[selectedExample].c_negative}</span>
+            <div class="example-grid">
+              <article class="example-col negative">
+                <span class="label">B: 灾难化认知 (导致焦虑)</span>
+                <p class="quote" id="exampleBNegative"></p>
+                <div class="result">
+                  <span class="label">C: 情绪与反应</span>
+                  <p id="exampleCNegative"></p>
                 </div>
-              </div>
-            </div>
+              </article>
 
-            {/* 理性视角 */}
-            <div className="p-6 hover:bg-emerald-50/50 transition-colors">
-              <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">B: 理性/现实认知 (掌控情绪)</span>
-              <p className="mt-2 text-slate-700 italic">"{examples[selectedExample].b_positive}"</p>
-              
-              <div className="mt-4 pt-4 border-t border-emerald-100">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">C: 情绪与反应</span>
-                <div className="mt-2 flex items-start gap-2 text-emerald-700 font-medium">
-                  <CheckCircle2 size={20} className="shrink-0" />
-                  <span>{examples[selectedExample].c_positive}</span>
+              <article class="example-col positive">
+                <span class="label">B: 理性/现实认知 (掌控情绪)</span>
+                <p class="quote" id="exampleBPositive"></p>
+                <div class="result">
+                  <span class="label">C: 情绪与反应</span>
+                  <p id="exampleCPositive"></p>
                 </div>
+              </article>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="tab-panel" id="tab-compare" hidden>
+        <article class="card compare-intro">
+          <h2 class="section-title">精准识别：这是焦虑，还是其他情绪？</h2>
+          <p>情绪很微妙。很多时候我们说“我很焦虑”，其实可能只是在经历压力或担忧。精准命名情绪，是夺回控制力的第一步。</p>
+        </article>
+
+        <div class="stack" id="compareCards"></div>
+      </section>
+
+      <section class="tab-panel" id="tab-cope" hidden>
+        <article class="card cope-intro">
+          <h2 class="section-title">打破焦虑循环的物理开关：回到当下</h2>
+          <p>
+            焦虑让你活在“危险的未来”。最快的方式是先改变生理状态（特别是呼吸）。深长呼气会激活副交感神经系统，给大脑“现在很安全”的信号。
+          </p>
+        </article>
+
+        <article class="card breath-box">
+          <h3 class="section-title">4-7-8 神经重置呼吸法</h3>
+          <div class="breath-stage">
+            <div class="breath-ring" id="breathRing" data-phase="idle"></div>
+            <div class="breath-core idle" id="breathCore">
+              <div>
+                <div id="phaseText">准备开始</div>
+                <div id="phaseCounter" hidden>1</div>
               </div>
             </div>
           </div>
+          <button class="btn start" id="breathToggle">开始练习</button>
+        </article>
+
+        <div class="practice-grid">
+          <article class="card">
+            <h3 class="section-title">认知替换练习 (如果A发生了)</h3>
+            <p>当焦虑想法(B)出现时，问自己三个问题：</p>
+            <ul>
+              <li>支持这个灾难想法的客观证据是什么？</li>
+              <li>有什么其他更合理的解释吗？</li>
+              <li>即使最坏情况发生了，我真的应对不了吗？</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h3 class="section-title">5-4-3-2-1 落地技术</h3>
+            <p>焦虑发作时，强制调动五感：</p>
+            <ul>
+              <li>找 <strong>5</strong> 件你能看到的东西</li>
+              <li>摸 <strong>4</strong> 件你能触碰的东西</li>
+              <li>听 <strong>3</strong> 种你能听到的声音</li>
+              <li>闻 <strong>2</strong> 种你能闻到的气味</li>
+              <li>感受 <strong>1</strong> 种嘴里的味道</li>
+            </ul>
+          </article>
         </div>
-      </div>
-    </div>
-  );
-}
+      </section>
+    </main>
 
-// --- Section 2: Emotion Comparison ---
-function CompareSection() {
-  const comparisons = [
-    {
-      name: "恐惧 (Fear)",
-      focus: "当下存在的明确威胁",
-      physical: "极度强烈（瞳孔放大、肌肉紧绷、准备战斗或逃跑）",
-      example: "在山里走着，突然一只熊出现在你面前。",
-      diff: "恐惧是对【现在】的反应，有明确的对象；而焦虑是对【未来】的预演，对象通常是模糊的。"
-    },
-    {
-      name: "压力 (Stress)",
-      focus: "现实的超负荷要求",
-      physical: "疲惫、肌肉酸痛、头痛，但通常在任务完成后消失",
-      example: "今晚午夜前必须提交一份30页的报告。",
-      diff: "压力由【外部真实任务】引起，任务结束压力通常消退；焦虑常由【内部想象】引起，哪怕没任务也可能持续存在。"
-    },
-    {
-      name: "担忧 (Worry)",
-      focus: "对未来可能出现的问题的思考",
-      physical: "主要是大脑层面的活动，身体反应较轻微",
-      example: "一直想着如果明天下雨，露营计划怎么办。",
-      diff: "担忧主要在你的【大脑】里打转；而焦虑不仅在大脑里，还会蔓延到【身体】（心慌、出汗、胃痛）。"
-    },
-    {
-      name: "焦虑 (Anxiety)",
-      focus: "对未来不确定性的灾难化预判",
-      physical: "心跳加快、呼吸急促、胃肠不适、坐立难安",
-      example: "总觉得明天去新公司会被所有人排挤，虽然毫无证据。",
-      diff: "综合了担忧的认知活动，并伴随类似恐惧的强烈身体反应，且具有持续性和泛化性。"
-    }
-  ];
+    <script>
+      const examples = [
+        {
+          title: "场景一：工作汇报",
+          a: "老板突然发消息：‘明早来我办公室一趟，聊聊你那个项目。’",
+          bNegative: "肯定是我搞砸了什么，他要批评我，甚至可能要开除我。",
+          cNegative: "心跳加速、失眠、极度焦虑，无法集中注意力。",
+          bPositive: "可能是项目有新进展，或者老板想了解一下常规进度。",
+          cPositive: "稍微有些紧张（压力），但能平静准备材料。"
+        },
+        {
+          title: "场景二：社交互动",
+          a: "给朋友发了微信，过了三个小时他都没有回复。",
+          bNegative: "他是不是讨厌我了？我昨天是不是说错话了？大家都不喜欢我。",
+          cNegative: "自我怀疑，不断翻看手机，胸口发闷（焦虑）。",
+          bPositive: "他可能在忙，或者没带手机，晚点总会回的。",
+          cPositive: "平静，继续做自己的事情。"
+        },
+        {
+          title: "场景三：身体健康",
+          a: "突然觉得胸口有点闷痛。",
+          bNegative: "我是不是得了心脏病？我是不是要死了？",
+          cNegative: "恐慌发作，呼吸急促，彻底的焦虑失控。",
+          bPositive: "可能只是今天太累了，或者昨晚没睡好，先观察一下。",
+          cPositive: "适度关注，保持放松。"
+        }
+      ];
 
-  return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="bg-slate-800 text-white rounded-2xl p-6 shadow-md">
-        <h2 className="text-xl font-bold mb-2">精准识别：这是焦虑，还是其他情绪？</h2>
-        <p className="text-slate-300">
-          情绪是非常微妙的。很多时候我们说“我很焦虑”，其实我们可能只是在经历压力或担忧。精准命名情绪，是剥夺它控制力的第一步。
-        </p>
-      </div>
+      const comparisons = [
+        {
+          name: "恐惧 (Fear)",
+          focus: "当下存在的明确威胁",
+          physical: "极度强烈（瞳孔放大、肌肉紧绷、准备战斗或逃跑）",
+          example: "在山里走着，突然一只熊出现在你面前。",
+          diff: "恐惧是对现在的反应，有明确对象；而焦虑是对未来的预演，对象通常更模糊。",
+          highlight: false
+        },
+        {
+          name: "压力 (Stress)",
+          focus: "现实的超负荷要求",
+          physical: "疲惫、肌肉酸痛、头痛，通常在任务完成后缓解",
+          example: "今晚午夜前必须提交一份30页的报告。",
+          diff: "压力由外部真实任务引起，任务结束通常会消退；焦虑常由内部想象引起，哪怕没任务也可能持续。",
+          highlight: false
+        },
+        {
+          name: "担忧 (Worry)",
+          focus: "对未来可能出现问题的思考",
+          physical: "主要在大脑层面活动，身体反应相对轻微",
+          example: "一直想着如果明天下雨，露营计划怎么办。",
+          diff: "担忧主要在大脑里打转；焦虑不仅在大脑里，还会蔓延到身体（心慌、出汗、胃痛）。",
+          highlight: false
+        },
+        {
+          name: "焦虑 (Anxiety)",
+          focus: "对未来不确定性的灾难化预判",
+          physical: "心跳加快、呼吸急促、胃肠不适、坐立难安",
+          example: "总觉得明天去新公司会被所有人排挤，虽然毫无证据。",
+          diff: "综合了担忧的认知活动，并伴随类似恐惧的强烈身体反应，且更容易持续与泛化。",
+          highlight: true
+        }
+      ];
 
-      <div className="grid gap-4">
-        {comparisons.map((item, index) => (
-          <div key={index} className={`bg-white border rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow ${item.name.includes("焦虑") ? 'border-blue-400 ring-1 ring-blue-100' : 'border-slate-200'}`}>
-            <div className="flex items-center gap-3 mb-4">
-              <div className={`w-3 h-3 rounded-full ${item.name.includes("焦虑") ? 'bg-blue-500' : 'bg-slate-400'}`}></div>
-              <h3 className="text-xl font-bold text-slate-800">{item.name}</h3>
-            </div>
-            
-            <div className="grid md:grid-cols-3 gap-4 text-sm mb-4">
-              <div className="bg-slate-50 p-3 rounded-lg">
-                <span className="block text-slate-500 mb-1">时间焦点</span>
-                <span className="font-medium text-slate-700">{item.focus}</span>
-              </div>
-              <div className="bg-slate-50 p-3 rounded-lg">
-                <span className="block text-slate-500 mb-1">身体表现</span>
-                <span className="font-medium text-slate-700">{item.physical}</span>
-              </div>
-              <div className="bg-slate-50 p-3 rounded-lg">
-                <span className="block text-slate-500 mb-1">典型场景</span>
-                <span className="font-medium text-slate-700">{item.example}</span>
-              </div>
-            </div>
+      let selectedExample = 0;
+      let activeTab = "logic";
 
-            <div className={`p-4 rounded-lg text-sm ${item.name.includes("焦虑") ? 'bg-blue-50 text-blue-900 font-medium' : 'bg-slate-100 text-slate-700'}`}>
-              <strong>与焦虑的核心区别：</strong>{item.diff}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+      const breathState = {
+        phase: "idle",
+        elapsed: 0,
+        timerId: null
+      };
 
-// --- Section 3: Coping Mechanism ---
-function CopeSection() {
-  const [phase, setPhase] = useState('idle'); // idle, inhale, hold, exhale
-  const [timer, setTimer] = useState(0);
+      const phaseLabel = {
+        idle: "准备开始",
+        inhale: "吸气 (4秒)",
+        hold: "屏气 (7秒)",
+        exhale: "缓慢呼气 (8秒)"
+      };
 
-  useEffect(() => {
-    let interval;
-    if (phase !== 'idle') {
-      interval = setInterval(() => {
-        setTimer((prev) => {
-          if (phase === 'inhale' && prev >= 4) { setPhase('hold'); return 0; }
-          if (phase === 'hold' && prev >= 7) { setPhase('exhale'); return 0; }
-          if (phase === 'exhale' && prev >= 8) { setPhase('inhale'); return 0; }
-          return prev + 1;
+      const phaseDuration = {
+        inhale: 4,
+        hold: 7,
+        exhale: 8
+      };
+
+      function renderExampleButtons() {
+        const container = document.getElementById("exampleButtons");
+        container.innerHTML = "";
+
+        examples.forEach((item, index) => {
+          const btn = document.createElement("button");
+          btn.className = `chip ${index === selectedExample ? "active" : ""}`;
+          btn.type = "button";
+          btn.textContent = item.title;
+          btn.addEventListener("click", () => {
+            selectedExample = index;
+            renderExampleButtons();
+            renderExample();
+          });
+          container.appendChild(btn);
         });
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [phase, timer]);
+      }
 
-  const startBreathing = () => {
-    setPhase('inhale');
-    setTimer(0);
-  };
+      function renderExample() {
+        const item = examples[selectedExample];
+        document.getElementById("exampleA").textContent = item.a;
+        document.getElementById("exampleBNegative").textContent = `“${item.bNegative}”`;
+        document.getElementById("exampleCNegative").textContent = item.cNegative;
+        document.getElementById("exampleBPositive").textContent = `“${item.bPositive}”`;
+        document.getElementById("exampleCPositive").textContent = item.cPositive;
+      }
 
-  const stopBreathing = () => {
-    setPhase('idle');
-    setTimer(0);
-  };
+      function renderCompareCards() {
+        const container = document.getElementById("compareCards");
+        container.innerHTML = "";
 
-  const getCircleClasses = () => {
-    if (phase === 'idle') return 'scale-100 bg-blue-100';
-    if (phase === 'inhale') return 'scale-150 bg-blue-400 transition-transform duration-[4000ms] ease-linear';
-    if (phase === 'hold') return 'scale-150 bg-blue-500 transition-colors duration-500';
-    if (phase === 'exhale') return 'scale-100 bg-blue-200 transition-all duration-[8000ms] ease-linear';
-  };
+        comparisons.forEach((item) => {
+          const card = document.createElement("article");
+          card.className = `compare-card ${item.highlight ? "highlight" : ""}`;
 
-  const getPhaseText = () => {
-    if (phase === 'idle') return '准备开始';
-    if (phase === 'inhale') return '吸气 (4秒)';
-    if (phase === 'hold') return '屏气 (7秒)';
-    if (phase === 'exhale') return '缓慢呼气 (8秒)';
-  };
-
-  return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      <div className="bg-emerald-50 text-emerald-900 rounded-2xl p-6 border border-emerald-100">
-        <h2 className="text-xl font-bold mb-2">打破焦虑循环的物理开关：回到当下</h2>
-        <p className="text-emerald-800">
-          焦虑让你活在“危险的未来”。欺骗大脑最快的方法，是通过改变生理状态（特别是呼吸）。当你采用深长呼气时，会激活副交感神经系统，强制大脑发出“现在很安全”的信号。
-        </p>
-      </div>
-
-      <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm flex flex-col items-center justify-center py-16">
-        <h3 className="text-xl font-bold text-slate-800 mb-8 text-center">4-7-8 神经重置呼吸法</h3>
-        
-        {/* Breathing Animation Circle */}
-        <div className="relative w-48 h-48 flex items-center justify-center mb-12">
-          {/* Pulsing background ring */}
-          <div className={`absolute inset-0 rounded-full opacity-20 ${getCircleClasses()}`}></div>
-          <div className={`absolute w-32 h-32 rounded-full flex items-center justify-center z-10 shadow-lg ${phase !== 'idle' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600'}`}>
-            <div className="text-center">
-              <span className="block text-sm font-bold opacity-80 mb-1">{getPhaseText()}</span>
-              {phase !== 'idle' && <span className="text-4xl font-light">{timer + 1}</span>}
+          card.innerHTML = `
+            <h3>${item.name}</h3>
+            <div class="meta-grid">
+              <div class="meta">
+                <strong>时间焦点</strong>
+                <span>${item.focus}</span>
+              </div>
+              <div class="meta">
+                <strong>身体表现</strong>
+                <span>${item.physical}</span>
+              </div>
+              <div class="meta">
+                <strong>典型场景</strong>
+                <span>${item.example}</span>
+              </div>
             </div>
-          </div>
-        </div>
+            <div class="diff"><strong>与焦虑的核心区别：</strong>${item.diff}</div>
+          `;
 
-        <div className="flex gap-4">
-          {phase === 'idle' ? (
-            <button 
-              onClick={startBreathing}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-medium transition-colors shadow-sm"
-            >
-              开始练习
-            </button>
-          ) : (
-            <button 
-              onClick={stopBreathing}
-              className="bg-slate-200 hover:bg-slate-300 text-slate-800 px-8 py-3 rounded-full font-medium transition-colors"
-            >
-              停止练习
-            </button>
-          )}
-        </div>
-      </div>
+          container.appendChild(card);
+        });
+      }
 
-      <div className="grid md:grid-cols-2 gap-4">
-        <div className="bg-white p-5 rounded-xl border border-slate-200">
-          <h4 className="font-bold text-slate-800 mb-2">认知替换练习 (如果A发生了)</h4>
-          <p className="text-sm text-slate-600 mb-3">当焦虑想法(B)出现时，问自己三个问题：</p>
-          <ul className="text-sm text-slate-700 space-y-2 list-disc pl-4 marker:text-blue-500">
-            <li>支持这个灾难想法的客观证据是什么？</li>
-            <li>有什么其他更合理的解释吗？</li>
-            <li>即使最坏的情况发生了，我真的应对不了吗？</li>
-          </ul>
-        </div>
-        <div className="bg-white p-5 rounded-xl border border-slate-200">
-          <h4 className="font-bold text-slate-800 mb-2">5-4-3-2-1 落地技术</h4>
-          <p className="text-sm text-slate-600 mb-3">焦虑发作时，强制调动五感：</p>
-          <ul className="text-sm text-slate-700 space-y-1">
-            <li>👁️ 找 <strong>5</strong> 件你能看到的东西</li>
-            <li>🤚 摸 <strong>4</strong> 件你能触碰的东西</li>
-            <li>👂 听 <strong>3</strong> 种你能听到的声音</li>
-            <li>👃 闻 <strong>2</strong> 种你能闻到的气味</li>
-            <li>👅 感受 <strong>1</strong> 种嘴里的味道</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  );
-}
+      function activateTab(tabName) {
+        activeTab = tabName;
+        const buttons = document.querySelectorAll(".tab-btn");
+        const panels = document.querySelectorAll(".tab-panel");
+
+        buttons.forEach((button) => {
+          const isActive = button.dataset.tab === tabName;
+          button.classList.toggle("active", isActive);
+          button.setAttribute("aria-selected", String(isActive));
+        });
+
+        panels.forEach((panel) => {
+          const isActive = panel.id === `tab-${tabName}`;
+          panel.hidden = !isActive;
+          panel.classList.toggle("active", isActive);
+        });
+      }
+
+      function nextPhase(phase) {
+        if (phase === "inhale") return "hold";
+        if (phase === "hold") return "exhale";
+        return "inhale";
+      }
+
+      function updateBreathingUI() {
+        const ring = document.getElementById("breathRing");
+        const core = document.getElementById("breathCore");
+        const text = document.getElementById("phaseText");
+        const counter = document.getElementById("phaseCounter");
+        const toggle = document.getElementById("breathToggle");
+
+        ring.dataset.phase = breathState.phase;
+        text.textContent = phaseLabel[breathState.phase];
+
+        if (breathState.phase === "idle") {
+          core.classList.add("idle");
+          counter.hidden = true;
+          toggle.textContent = "开始练习";
+          toggle.className = "btn start";
+          return;
+        }
+
+        const duration = phaseDuration[breathState.phase];
+        core.classList.remove("idle");
+        counter.hidden = false;
+        counter.textContent = String(Math.min(breathState.elapsed + 1, duration));
+        toggle.textContent = "停止练习";
+        toggle.className = "btn stop";
+      }
+
+      function stopBreathing() {
+        if (breathState.timerId) {
+          window.clearInterval(breathState.timerId);
+          breathState.timerId = null;
+        }
+
+        breathState.phase = "idle";
+        breathState.elapsed = 0;
+        updateBreathingUI();
+      }
+
+      function startBreathing() {
+        if (breathState.timerId) {
+          window.clearInterval(breathState.timerId);
+        }
+
+        breathState.phase = "inhale";
+        breathState.elapsed = 0;
+        updateBreathingUI();
+
+        breathState.timerId = window.setInterval(() => {
+          breathState.elapsed += 1;
+
+          if (breathState.elapsed >= phaseDuration[breathState.phase]) {
+            breathState.phase = nextPhase(breathState.phase);
+            breathState.elapsed = 0;
+          }
+
+          updateBreathingUI();
+        }, 1000);
+      }
+
+      function bindEvents() {
+        document.querySelectorAll(".tab-btn").forEach((button) => {
+          button.addEventListener("click", () => {
+            activateTab(button.dataset.tab);
+          });
+        });
+
+        document.getElementById("breathToggle").addEventListener("click", () => {
+          if (breathState.phase === "idle") {
+            startBreathing();
+          } else {
+            stopBreathing();
+          }
+        });
+      }
+
+      function init() {
+        renderExampleButtons();
+        renderExample();
+        renderCompareCards();
+        bindEvents();
+        activateTab(activeTab);
+        updateBreathingUI();
+      }
+
+      init();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,343 @@
+import React, { useState, useEffect } from 'react';
+import { Brain, Activity, Wind, ArrowRight, ShieldAlert, Zap, HelpCircle, CheckCircle2 } from 'lucide-react';
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('logic');
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-blue-200">
+      {/* Header */}
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 flex items-center gap-3">
+            <Brain className="text-blue-500 w-8 h-8" />
+            拆解与掌控焦虑
+          </h1>
+          <p className="text-slate-500 mt-2 text-sm md:text-base">
+            理解它的底层逻辑，辨析它的面貌，然后重新夺回大脑的控制权。
+          </p>
+        </div>
+        {/* Navigation Tabs */}
+        <div className="max-w-4xl mx-auto px-4 flex gap-6 overflow-x-auto border-t border-slate-100 pt-2">
+          <TabButton active={activeTab === 'logic'} onClick={() => setActiveTab('logic')} icon={<Zap size={18} />} label="1. 底层逻辑 (ABC模型)" />
+          <TabButton active={activeTab === 'compare'} onClick={() => setActiveTab('compare')} icon={<ShieldAlert size={18} />} label="2. 情绪辨析" />
+          <TabButton active={activeTab === 'cope'} onClick={() => setActiveTab('cope')} icon={<Wind size={18} />} label="3. 掌控练习" />
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-4xl mx-auto px-4 py-8">
+        {activeTab === 'logic' && <LogicSection />}
+        {activeTab === 'compare' && <CompareSection />}
+        {activeTab === 'cope' && <CopeSection />}
+      </main>
+    </div>
+  );
+}
+
+// --- Tab Button Component ---
+function TabButton({ active, onClick, icon, label }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex items-center gap-2 pb-4 pt-2 border-b-2 font-medium transition-colors whitespace-nowrap ${
+        active ? 'border-blue-500 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-800'
+      }`}
+    >
+      {icon}
+      {label}
+    </button>
+  );
+}
+
+// --- Section 1: Logic (ABC Model) ---
+function LogicSection() {
+  const [selectedExample, setSelectedExample] = useState(0);
+
+  const examples = [
+    {
+      title: "场景一：工作汇报",
+      a: "老板突然发消息：'明早来我办公室一趟，聊聊你那个项目'。",
+      b_negative: "肯定是我搞砸了什么，他要批评我，甚至可能要开除我。",
+      c_negative: "心跳加速、失眠、极度焦虑，无法集中注意力。",
+      b_positive: "可能是项目有新进展，或者老板想了解一下常规进度。",
+      c_positive: "稍微有些紧张（压力），但能平静准备材料。"
+    },
+    {
+      title: "场景二：社交互动",
+      a: "给朋友发了微信，过了三个小时他都没有回复。",
+      b_negative: "他是不是讨厌我了？我昨天是不是说错话了？大家都不喜欢我。",
+      c_negative: "自我怀疑，不断翻看手机，胸口发闷（焦虑）。",
+      b_positive: "他可能在忙，或者没带手机，晚点总会回的。",
+      c_positive: "平静，继续做自己的事情。"
+    },
+    {
+      title: "场景三：身体健康",
+      a: "突然觉得胸口有点闷痛。",
+      b_negative: "我是不是得了心脏病？我是不是要死了？",
+      c_negative: "恐慌发作，呼吸急促，彻底的焦虑失控。",
+      b_positive: "可能只是今天太累了，或者昨晚没睡好，观察一下。",
+      c_positive: "适度关注，保持放松。"
+    }
+  ];
+
+  return (
+    <div className="space-y-8 animate-in fade-in duration-500">
+      <div className="bg-blue-50 rounded-2xl p-6 border border-blue-100 text-blue-900">
+        <h2 className="text-xl font-bold mb-3 flex items-center gap-2">
+          <HelpCircle size={24} className="text-blue-500" />
+          焦虑的底层逻辑：并非事情伤人，而是你的“观点”伤人
+        </h2>
+        <p className="leading-relaxed">
+          在心理学（认知行为疗法 CBT）中，这被称为 <strong>ABC模型</strong>。<br/>
+          <strong>A (Activating Event):</strong> 发生的客观事件。<br/>
+          <strong>B (Beliefs):</strong> 你对这件事情的信念、看法或灾难化想象。<br/>
+          <strong>C (Consequences):</strong> 产生的情绪结果（即焦虑）。<br/>
+          焦虑产生于 <strong>对“未来不确定性”的灾难化加工 (B)</strong>。
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-slate-800">点击体验不同观点带来的结果变化：</h3>
+        <div className="flex gap-2 overflow-x-auto pb-2">
+          {examples.map((ex, idx) => (
+            <button
+              key={idx}
+              onClick={() => setSelectedExample(idx)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                selectedExample === idx ? 'bg-slate-800 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              {ex.title}
+            </button>
+          ))}
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mt-4">
+          <div className="p-6 bg-slate-50 border-b border-slate-200">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">A: 客观事件</span>
+            <p className="text-lg mt-1 font-medium text-slate-800">{examples[selectedExample].a}</p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x border-slate-200">
+            {/* 灾难化视角 */}
+            <div className="p-6 hover:bg-red-50/50 transition-colors">
+              <span className="text-xs font-bold text-red-500 uppercase tracking-wider">B: 灾难化认知 (导致焦虑)</span>
+              <p className="mt-2 text-slate-700 italic">"{examples[selectedExample].b_negative}"</p>
+              
+              <div className="mt-4 pt-4 border-t border-red-100">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">C: 情绪与反应</span>
+                <div className="mt-2 flex items-start gap-2 text-red-700 font-medium">
+                  <Activity size={20} className="shrink-0" />
+                  <span>{examples[selectedExample].c_negative}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 理性视角 */}
+            <div className="p-6 hover:bg-emerald-50/50 transition-colors">
+              <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">B: 理性/现实认知 (掌控情绪)</span>
+              <p className="mt-2 text-slate-700 italic">"{examples[selectedExample].b_positive}"</p>
+              
+              <div className="mt-4 pt-4 border-t border-emerald-100">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">C: 情绪与反应</span>
+                <div className="mt-2 flex items-start gap-2 text-emerald-700 font-medium">
+                  <CheckCircle2 size={20} className="shrink-0" />
+                  <span>{examples[selectedExample].c_positive}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- Section 2: Emotion Comparison ---
+function CompareSection() {
+  const comparisons = [
+    {
+      name: "恐惧 (Fear)",
+      focus: "当下存在的明确威胁",
+      physical: "极度强烈（瞳孔放大、肌肉紧绷、准备战斗或逃跑）",
+      example: "在山里走着，突然一只熊出现在你面前。",
+      diff: "恐惧是对【现在】的反应，有明确的对象；而焦虑是对【未来】的预演，对象通常是模糊的。"
+    },
+    {
+      name: "压力 (Stress)",
+      focus: "现实的超负荷要求",
+      physical: "疲惫、肌肉酸痛、头痛，但通常在任务完成后消失",
+      example: "今晚午夜前必须提交一份30页的报告。",
+      diff: "压力由【外部真实任务】引起，任务结束压力通常消退；焦虑常由【内部想象】引起，哪怕没任务也可能持续存在。"
+    },
+    {
+      name: "担忧 (Worry)",
+      focus: "对未来可能出现的问题的思考",
+      physical: "主要是大脑层面的活动，身体反应较轻微",
+      example: "一直想着如果明天下雨，露营计划怎么办。",
+      diff: "担忧主要在你的【大脑】里打转；而焦虑不仅在大脑里，还会蔓延到【身体】（心慌、出汗、胃痛）。"
+    },
+    {
+      name: "焦虑 (Anxiety)",
+      focus: "对未来不确定性的灾难化预判",
+      physical: "心跳加快、呼吸急促、胃肠不适、坐立难安",
+      example: "总觉得明天去新公司会被所有人排挤，虽然毫无证据。",
+      diff: "综合了担忧的认知活动，并伴随类似恐惧的强烈身体反应，且具有持续性和泛化性。"
+    }
+  ];
+
+  return (
+    <div className="space-y-6 animate-in fade-in duration-500">
+      <div className="bg-slate-800 text-white rounded-2xl p-6 shadow-md">
+        <h2 className="text-xl font-bold mb-2">精准识别：这是焦虑，还是其他情绪？</h2>
+        <p className="text-slate-300">
+          情绪是非常微妙的。很多时候我们说“我很焦虑”，其实我们可能只是在经历压力或担忧。精准命名情绪，是剥夺它控制力的第一步。
+        </p>
+      </div>
+
+      <div className="grid gap-4">
+        {comparisons.map((item, index) => (
+          <div key={index} className={`bg-white border rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow ${item.name.includes("焦虑") ? 'border-blue-400 ring-1 ring-blue-100' : 'border-slate-200'}`}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className={`w-3 h-3 rounded-full ${item.name.includes("焦虑") ? 'bg-blue-500' : 'bg-slate-400'}`}></div>
+              <h3 className="text-xl font-bold text-slate-800">{item.name}</h3>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-4 text-sm mb-4">
+              <div className="bg-slate-50 p-3 rounded-lg">
+                <span className="block text-slate-500 mb-1">时间焦点</span>
+                <span className="font-medium text-slate-700">{item.focus}</span>
+              </div>
+              <div className="bg-slate-50 p-3 rounded-lg">
+                <span className="block text-slate-500 mb-1">身体表现</span>
+                <span className="font-medium text-slate-700">{item.physical}</span>
+              </div>
+              <div className="bg-slate-50 p-3 rounded-lg">
+                <span className="block text-slate-500 mb-1">典型场景</span>
+                <span className="font-medium text-slate-700">{item.example}</span>
+              </div>
+            </div>
+
+            <div className={`p-4 rounded-lg text-sm ${item.name.includes("焦虑") ? 'bg-blue-50 text-blue-900 font-medium' : 'bg-slate-100 text-slate-700'}`}>
+              <strong>与焦虑的核心区别：</strong>{item.diff}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// --- Section 3: Coping Mechanism ---
+function CopeSection() {
+  const [phase, setPhase] = useState('idle'); // idle, inhale, hold, exhale
+  const [timer, setTimer] = useState(0);
+
+  useEffect(() => {
+    let interval;
+    if (phase !== 'idle') {
+      interval = setInterval(() => {
+        setTimer((prev) => {
+          if (phase === 'inhale' && prev >= 4) { setPhase('hold'); return 0; }
+          if (phase === 'hold' && prev >= 7) { setPhase('exhale'); return 0; }
+          if (phase === 'exhale' && prev >= 8) { setPhase('inhale'); return 0; }
+          return prev + 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [phase, timer]);
+
+  const startBreathing = () => {
+    setPhase('inhale');
+    setTimer(0);
+  };
+
+  const stopBreathing = () => {
+    setPhase('idle');
+    setTimer(0);
+  };
+
+  const getCircleClasses = () => {
+    if (phase === 'idle') return 'scale-100 bg-blue-100';
+    if (phase === 'inhale') return 'scale-150 bg-blue-400 transition-transform duration-[4000ms] ease-linear';
+    if (phase === 'hold') return 'scale-150 bg-blue-500 transition-colors duration-500';
+    if (phase === 'exhale') return 'scale-100 bg-blue-200 transition-all duration-[8000ms] ease-linear';
+  };
+
+  const getPhaseText = () => {
+    if (phase === 'idle') return '准备开始';
+    if (phase === 'inhale') return '吸气 (4秒)';
+    if (phase === 'hold') return '屏气 (7秒)';
+    if (phase === 'exhale') return '缓慢呼气 (8秒)';
+  };
+
+  return (
+    <div className="space-y-8 animate-in fade-in duration-500">
+      <div className="bg-emerald-50 text-emerald-900 rounded-2xl p-6 border border-emerald-100">
+        <h2 className="text-xl font-bold mb-2">打破焦虑循环的物理开关：回到当下</h2>
+        <p className="text-emerald-800">
+          焦虑让你活在“危险的未来”。欺骗大脑最快的方法，是通过改变生理状态（特别是呼吸）。当你采用深长呼气时，会激活副交感神经系统，强制大脑发出“现在很安全”的信号。
+        </p>
+      </div>
+
+      <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm flex flex-col items-center justify-center py-16">
+        <h3 className="text-xl font-bold text-slate-800 mb-8 text-center">4-7-8 神经重置呼吸法</h3>
+        
+        {/* Breathing Animation Circle */}
+        <div className="relative w-48 h-48 flex items-center justify-center mb-12">
+          {/* Pulsing background ring */}
+          <div className={`absolute inset-0 rounded-full opacity-20 ${getCircleClasses()}`}></div>
+          <div className={`absolute w-32 h-32 rounded-full flex items-center justify-center z-10 shadow-lg ${phase !== 'idle' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600'}`}>
+            <div className="text-center">
+              <span className="block text-sm font-bold opacity-80 mb-1">{getPhaseText()}</span>
+              {phase !== 'idle' && <span className="text-4xl font-light">{timer + 1}</span>}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-4">
+          {phase === 'idle' ? (
+            <button 
+              onClick={startBreathing}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-medium transition-colors shadow-sm"
+            >
+              开始练习
+            </button>
+          ) : (
+            <button 
+              onClick={stopBreathing}
+              className="bg-slate-200 hover:bg-slate-300 text-slate-800 px-8 py-3 rounded-full font-medium transition-colors"
+            >
+              停止练习
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        <div className="bg-white p-5 rounded-xl border border-slate-200">
+          <h4 className="font-bold text-slate-800 mb-2">认知替换练习 (如果A发生了)</h4>
+          <p className="text-sm text-slate-600 mb-3">当焦虑想法(B)出现时，问自己三个问题：</p>
+          <ul className="text-sm text-slate-700 space-y-2 list-disc pl-4 marker:text-blue-500">
+            <li>支持这个灾难想法的客观证据是什么？</li>
+            <li>有什么其他更合理的解释吗？</li>
+            <li>即使最坏的情况发生了，我真的应对不了吗？</li>
+          </ul>
+        </div>
+        <div className="bg-white p-5 rounded-xl border border-slate-200">
+          <h4 className="font-bold text-slate-800 mb-2">5-4-3-2-1 落地技术</h4>
+          <p className="text-sm text-slate-600 mb-3">焦虑发作时，强制调动五感：</p>
+          <ul className="text-sm text-slate-700 space-y-1">
+            <li>👁️ 找 <strong>5</strong> 件你能看到的东西</li>
+            <li>🤚 摸 <strong>4</strong> 件你能触碰的东西</li>
+            <li>👂 听 <strong>3</strong> 种你能听到的声音</li>
+            <li>👃 闻 <strong>2</strong> 种你能闻到的气味</li>
+            <li>👅 感受 <strong>1</strong> 种嘴里的味道</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
